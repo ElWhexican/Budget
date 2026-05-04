@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BudgetFlow — Business</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow-x:hidden;}
+
+/* ── SIDEBAR ── */
+.app{display:flex;min-height:100dvh;background:#f4f5f7;}
+.sb{width:200px;min-width:200px;background:#1a1d23;display:flex;flex-direction:column;flex-shrink:0;}
+.logo{padding:1.1rem 1rem;display:flex;align-items:center;gap:9px;border-bottom:1px solid #2d3139;}
+.logo-ic{width:28px;height:28px;background:#5856D6;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;}
+.logo-t{font-size:14px;font-weight:600;color:#fff;}
+.logo-b{font-size:9px;color:#6b7280;font-weight:500;letter-spacing:.05em;text-transform:uppercase;}
+.nav{padding:.5rem 0;flex:1;overflow-y:auto;}
+.nl{font-size:9.5px;color:#4b5563;padding:.75rem 1rem .2rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;}
+.ni{display:flex;align-items:center;gap:8px;padding:.4rem .875rem;font-size:12.5px;color:#9ca3af;cursor:pointer;border-left:2.5px solid transparent;transition:all .15s;}
+.ni:hover{color:#e5e7eb;background:rgba(255,255,255,.05);}
+.ni.active{color:#fff;font-weight:500;background:rgba(88,86,214,.18);border-left-color:#5856D6;}
+.ni-ic{width:15px;text-align:center;font-size:13px;opacity:.8;}
+.nb{font-size:10px;padding:1px 6px;border-radius:10px;background:#5856D6;color:#fff;margin-left:auto;}
+.nb.warn{background:#B45309;}
+.u-area{padding:.875rem 1rem;border-top:1px solid #2d3139;}
+.u-name{font-size:12.5px;font-weight:500;color:#e5e7eb;}
+.u-sub{font-size:10.5px;color:#6b7280;margin-top:2px;display:flex;align-items:center;gap:4px;}
+.udot{width:6px;height:6px;background:#1D9E75;border-radius:50%;display:inline-block;}
+
+/* ── MAIN ── */
+.main{flex:1;min-width:0;padding:1.25rem 1.5rem;overflow:auto;background:#f4f5f7;}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px;}
+.pt{font-size:17px;font-weight:600;color:#111827;}
+.ps{font-size:12px;color:#6b7280;margin-top:3px;}
+.ctrls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.btn{padding:5px 12px;font-size:12px;border:1px solid #d1d5db;border-radius:7px;background:#fff;color:#374151;cursor:pointer;font-weight:500;}
+.btn:hover{background:#f9fafb;}
+.btnp{padding:5px 12px;font-size:12px;border-radius:7px;background:#5856D6;color:#fff;cursor:pointer;border:none;font-weight:500;}
+.btnp:hover{background:#4845b0;}
+.btng{padding:5px 12px;font-size:12px;border-radius:7px;background:#1D9E75;color:#fff;cursor:pointer;border:none;font-weight:500;}
+.bdg{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;}
+.bok{background:#d1fae5;color:#065f46;}.bsync{background:#ede9fe;color:#4338ca;}.bwarn{background:#fef3c7;color:#92400e;}.berr{background:#fee2e2;color:#991b1b;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.125rem;}
+.card{background:#fff;border-radius:10px;padding:.875rem 1rem;border:1px solid #e5e7eb;}
+.cl{font-size:11px;color:#6b7280;margin-bottom:5px;font-weight:500;}
+.cv{font-size:20px;font-weight:600;color:#111827;}
+.cd{font-size:11px;margin-top:3px;color:#6b7280;}
+.pos{color:#1D9E75;}.neg{color:#E24B4A;}.pur{color:#5856D6;}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:1.125rem;overflow:hidden;}
+.ph{padding:.8rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;flex-wrap:wrap;gap:8px;}
+.ptitle{font-size:13px;font-weight:600;color:#111827;}
+.cw{padding:1rem 1.25rem;height:220px;}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px;}
+thead th{padding:8px 12px;text-align:left;font-weight:600;font-size:11px;color:#6b7280;border-bottom:1px solid #e5e7eb;white-space:nowrap;background:#f9fafb;}
+tbody td{padding:9px 12px;color:#374151;border-bottom:1px solid #f3f4f6;font-size:12.5px;}
+tbody tr:hover td{background:#fafafa;}
+tbody tr:last-child td{border-bottom:none;}
+.tag{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:600;white-space:nowrap;}
+.tag-green{background:#d1fae5;color:#065f46;}
+.tag-blue{background:#dbeafe;color:#1e40af;}
+.tag-yellow{background:#fef3c7;color:#92400e;}
+.tag-red{background:#fee2e2;color:#991b1b;}
+.tag-purple{background:#ede9fe;color:#5b21b6;}
+.tag-gray{background:#f3f4f6;color:#374151;}
+.rout-row{display:flex;align-items:center;padding:10px 1.25rem;border-bottom:1px solid #f3f4f6;gap:10px;transition:background .12s;}
+.rout-row:hover{background:#f9fafb;}
+.rout-row:last-child{border-bottom:none;}
+.rout-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.rout-info{flex:1;min-width:0;}
+.rout-name{font-size:13px;font-weight:500;color:#111827;}
+.rout-meta{font-size:11px;color:#6b7280;margin-top:1px;}
+.rout-amt{font-size:13px;font-weight:600;text-align:right;flex-shrink:0;}
+.rout-dest{font-size:10.5px;text-align:right;margin-top:2px;color:#6b7280;}
+.conf-bar{display:flex;align-items:center;gap:6px;margin-top:3px;}
+.conf-track{flex:1;height:3px;background:#e5e7eb;border-radius:2px;}
+.conf-fill{height:3px;border-radius:2px;}
+.arrow{color:#9ca3af;font-size:16px;flex-shrink:0;}
+.route-badge{font-size:10px;padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.unmatched-row{background:#fffbeb!important;}
+.unmatched-row:hover{background:#fef9e7!important;}
+.progress-wrap{padding:0 1.25rem 1rem;}
+.progress-lbl{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-bottom:4px;}
+.progress-track{height:6px;background:#f3f4f6;border-radius:3px;}
+.progress-fill{height:6px;border-radius:3px;transition:width .3s;}
+.kv{display:flex;justify-content:space-between;align-items:center;padding:8px 1.25rem;border-bottom:1px solid #f3f4f6;font-size:12.5px;}
+.kv:last-child{border-bottom:none;}
+.kv-l{color:#6b7280;font-weight:500;}
+.kv-v{color:#111827;font-weight:600;}
+select{font-size:11px;padding:3px 7px;border:1px solid #d1d5db;border-radius:6px;background:#fff;color:#374151;cursor:pointer;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal{background:#fff;border-radius:12px;padding:1.5rem;width:380px;max-width:100%;}
+.modal h3{font-size:15px;font-weight:600;color:#111827;margin-bottom:1rem;}
+.modal-row{display:flex;flex-direction:column;gap:4px;margin-bottom:.875rem;}
+.modal-row label{font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;}
+.modal-row input,.modal-row select,.modal-row textarea{padding:7px 10px;border:1px solid #d1d5db;border-radius:7px;font-size:13px;color:#111827;width:100%;outline:none;}
+.modal-row input:focus,.modal-row select:focus{border-color:#5856D6;}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;}
+
+/* ── MOBILE HAMBURGER ── */
+.mob-topbar{display:none;align-items:center;justify-content:space-between;padding:.875rem 1rem;background:#1a1d23;position:sticky;top:0;z-index:150;}
+.mob-logo{display:flex;align-items:center;gap:8px;}
+.mob-logo-ic{width:26px;height:26px;background:#5856D6;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;}
+.mob-logo-t{font-size:14px;font-weight:600;color:#fff;}
+.hamburger{background:none;border:none;cursor:pointer;padding:4px;display:flex;flex-direction:column;gap:5px;}
+.hamburger span{display:block;width:22px;height:2px;background:#9ca3af;border-radius:2px;transition:all .2s;}
+
+/* Overlay */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:160;}
+.sb-overlay.open{display:block;}
+
+/* Drawer */
+.sb.drawer{position:fixed;top:0;left:0;height:100%;z-index:170;transform:translateX(-100%);transition:transform .25s ease;overflow-y:auto;}
+.sb.drawer.open{transform:translateX(0);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:680px){
+.sb{display:none;}
+.mob-topbar{display:flex;}
+.sb.drawer{display:flex;}
+.main{padding:.875rem 1rem;padding-bottom:env(safe-area-inset-bottom, 1rem);}
+.cards{grid-template-columns:repeat(2,1fr);}
+.hub-grid-2,.hub-grid-bottom{grid-template-columns:1fr!important;}
+.kv-grid{grid-template-columns:1fr 1fr!important;}
+.topbar .ctrls .bdg{display:none;}
+.topbar{margin-bottom:1rem;}
+.pt{font-size:15px;}
+select.assign-sel{max-width:130px;font-size:10px;}
+}
+@media(max-width:400px){
+.cards{grid-template-columns:1fr 1fr;}
+.cv{font-size:17px;}
+}
+</style>
+
+</head>
+<body>
+
+<!-- Mobile top bar -->
+
+<div class="mob-topbar">
+  <div class="mob-logo">
+    <div class="mob-logo-ic">B</div>
+    <span class="mob-logo-t">BudgetFlow</span>
+  </div>
+  <button class="hamburger" id="ham-btn" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+<!-- Overlay for drawer -->
+
+<div class="sb-overlay" id="sb-overlay"></div>
+
+<div class="app">
+<aside class="sb drawer" id="sidebar">
+  <div class="logo"><div class="logo-ic">B</div><div><div class="logo-t">BudgetFlow</div><div class="logo-b">Business</div></div></div>
+  <nav class="nav">
+    <div class="nl">Overview</div>
+    <div class="ni active" data-v="hub"><span class="ni-ic">⬡</span>Command Hub</div>
+    <div class="nl">Business</div>
+    <div class="ni" data-v="routing"><span class="ni-ic">⟳</span>Transaction Routing<span class="nb warn">3</span></div>
+    <div class="ni" data-v="projects"><span class="ni-ic">◈</span>Projects<span class="nb">4</span></div>
+    <div class="ni" data-v="pos"><span class="ni-ic">📋</span>Purchase Orders<span class="nb warn">2</span></div>
+    <div class="ni" data-v="invoices"><span class="ni-ic">🧾</span>Invoices<span class="nb warn">3</span></div>
+    <div class="ni" data-v="contracts"><span class="ni-ic">📄</span>Contracts</div>
+    <div class="nl">Finance</div>
+    <div class="ni" data-v="budget"><span class="ni-ic">▤</span>Budget</div>
+    <div class="ni" data-v="cashflow"><span class="ni-ic">◐</span>Cash Flow</div>
+    <div class="ni" data-v="txns"><span class="ni-ic">≡</span>Transactions</div>
+    <div class="nl">Accounts</div>
+    <div class="ni" data-v="cards"><span class="ni-ic">⊟</span>Linked Cards</div>
+    <div class="ni" data-v="settings"><span class="ni-ic">⚙</span>Settings</div>
+  </nav>
+  <div class="u-area">
+    <div class="u-name">Acme Co.</div>
+    <div class="u-sub"><span class="udot"></span>Live · 2 cards synced</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div><div class="pt" id="pt">Command Hub</div><div class="ps" id="ps">All your business financials in one place</div></div>
+    <div class="ctrls">
+      <span class="bdg bok">● Live sync</span>
+      <span class="bdg bsync">Chase · Amex</span>
+      <button class="btn" id="export-btn">Export</button>
+      <button class="btnp" id="add-btn">+ New</button>
+    </div>
+  </div>
+  <div id="content"></div>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<script>
+// ── DRAWER / HAMBURGER ──────────────────────────────────
+const ham=document.getElementById('ham-btn');
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('sb-overlay');
+function openDrawer(){sidebar.classList.add('open');overlay.classList.add('open');document.body.style.overflow='hidden';}
+function closeDrawer(){sidebar.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow='';}
+ham.addEventListener('click',openDrawer);
+overlay.addEventListener('click',closeDrawer);
+
+const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let charts=[];
+function kc(){charts.forEach(c=>c.destroy());charts=[];}
+function $v(n){return'$'+Math.abs(Math.round(n)).toLocaleString();}
+function $d(n){return(n<0?'-$':'$')+Math.abs(n).toFixed(2);}
+
+// ── DATA ──────────────────────────────────────────────
+const PROJECTS=[
+  {id:'P001',name:'Riverside Office Renovation',client:'Riverside Holdings',budget:48000,spent:31450,status:'Active',pm:'Sarah K.',due:'Aug 15 2026',color:'#5856D6'},
+  {id:'P002',name:'Main St. Retail Buildout',client:'Downtown Retail LLC',budget:22500,spent:22100,status:'At Risk',pm:'Mike T.',due:'Jun 01 2026',color:'#E24B4A'},
+  {id:'P003',name:'Warehouse HVAC Upgrade',client:'Acme Logistics',budget:15000,spent:6200,status:'Active',pm:'Sarah K.',due:'Sep 30 2026',color:'#1D9E75'},
+  {id:'P004',name:'Corporate HQ Painting',client:'Apex Corp',budget:8500,spent:8500,status:'Complete',pm:'James R.',due:'Apr 10 2026',color:'#6b7280'},
+];
+const POS=[
+  {id:'PO-2026-041',vendor:"Lowe's Pro",project:'P001',amount:4200,status:'Open',date:'Apr 28 2026',category:'Materials',matched:false},
+  {id:'PO-2026-042',vendor:'Ferguson HVAC Supply',project:'P003',amount:3800,status:'Partially Filled',date:'Apr 25 2026',category:'Equipment',matched:true},
+  {id:'PO-2026-040',vendor:'Home Depot Pro',project:'P002',amount:1950,status:'Fulfilled',date:'Apr 20 2026',category:'Materials',matched:true},
+  {id:'PO-2026-039',vendor:'Sherwin-Williams',project:'P004',amount:820,status:'Fulfilled',date:'Apr 14 2026',category:'Supplies',matched:true},
+  {id:'PO-2026-038',vendor:'ABC Electrical Supply',project:'P001',amount:6100,status:'Open',date:'Apr 10 2026',category:'Electrical',matched:false},
+];
+const INVOICES=[
+  {id:'INV-2026-019',client:'Riverside Holdings',project:'P001',amount:16000,status:'Overdue',due:'Apr 15 2026',issued:'Mar 15 2026'},
+  {id:'INV-2026-020',client:'Downtown Retail LLC',project:'P002',amount:9500,status:'Sent',due:'May 10 2026',issued:'Apr 10 2026'},
+  {id:'INV-2026-021',client:'Acme Logistics',project:'P003',amount:5000,status:'Paid',due:'Apr 30 2026',issued:'Apr 01 2026'},
+  {id:'INV-2026-022',client:'Apex Corp',project:'P004',amount:8500,status:'Paid',due:'Apr 20 2026',issued:'Apr 05 2026'},
+  {id:'INV-2026-023',client:'Riverside Holdings',project:'P001',amount:12000,status:'Draft',due:'May 31 2026',issued:'Apr 28 2026'},
+];
+const CONTRACTS=[
+  {id:'CTR-001',name:'Riverside Renovation — Phase 2',client:'Riverside Holdings',value:48000,start:'Jan 15 2026',end:'Aug 15 2026',status:'Active'},
+  {id:'CTR-002',name:'Main St. Retail Buildout',client:'Downtown Retail LLC',value:22500,start:'Feb 01 2026',end:'Jun 01 2026',status:'Active'},
+  {id:'CTR-003',name:'Warehouse HVAC Upgrade',client:'Acme Logistics',value:15000,start:'Mar 01 2026',end:'Sep 30 2026',status:'Active'},
+  {id:'CTR-004',name:'Corporate HQ Painting',client:'Apex Corp',value:8500,start:'Mar 20 2026',end:'Apr 10 2026',status:'Closed'},
+];
+const TRANSACTIONS=[
+  {id:'T001',date:'May 02',merchant:"Lowe's Pro #4821",amt:-1842.56,acc:'Chase',routed:true,dest:'PO-2026-041',destType:'PO',conf:97,cat:'Materials'},
+  {id:'T002',date:'May 02',merchant:'Ferguson HVAC Supply',amt:-2410.00,acc:'Chase',routed:true,dest:'PO-2026-042',destType:'PO',conf:99,cat:'Equipment'},
+  {id:'T003',date:'May 01',merchant:'Home Depot Pro',amt:-384.20,acc:'Amex',routed:true,dest:'P002',destType:'Project',conf:88,cat:'Materials'},
+  {id:'T004',date:'May 01',merchant:'Shell Gas #192',amt:-94.50,acc:'Amex',routed:false,dest:null,destType:null,conf:0,cat:'Fuel'},
+  {id:'T005',date:'Apr 30',merchant:'Sherwin-Williams #44',amt:-612.00,acc:'Chase',routed:true,dest:'CTR-004',destType:'Contract',conf:95,cat:'Supplies'},
+  {id:'T006',date:'Apr 30',merchant:'Ace Hardware',amt:-147.33,acc:'Amex',routed:false,dest:null,destType:null,conf:0,cat:'Hardware'},
+  {id:'T007',date:'Apr 29',merchant:'ABC Electrical Supply',amt:-3150.00,acc:'Chase',routed:true,dest:'PO-2026-038',destType:'PO',conf:96,cat:'Electrical'},
+  {id:'T008',date:'Apr 29',merchant:'Restaurant — team lunch',amt:-127.40,acc:'Amex',routed:false,dest:null,destType:null,conf:0,cat:'Meals'},
+  {id:'T009',date:'Apr 28',merchant:'AutoZone',amt:-89.99,acc:'Amex',routed:true,dest:'P003',destType:'Project',conf:72,cat:'Supplies'},
+  {id:'T010',date:'Apr 28',merchant:'Riverside Holdings — payment',amt:16000.00,acc:'Chase',routed:true,dest:'INV-2026-021',destType:'Invoice',conf:99,cat:'Revenue'},
+];
+
+const VC={
+  hub:     {title:'Command Hub',sub:'All your financials, projects, and activity at a glance'},
+  routing: {title:'Transaction Routing',sub:'Live card spend automatically matched to Projects, POs, Invoices & Contracts'},
+  projects:{title:'Projects',sub:'Track budget, spend, and status across all active jobs'},
+  pos:     {title:'Purchase Orders',sub:'Manage vendor POs and track fulfillment'},
+  invoices:{title:'Invoices',sub:'Track client invoices — sent, overdue, and paid'},
+  contracts:{title:'Contracts',sub:'All active and closed client contracts'},
+  budget:  {title:'Budget',sub:'FY 2026 rolling forecast'},
+  cashflow:{title:'Cash Flow',sub:'Monthly inflows and outflows'},
+  txns:    {title:'All Transactions',sub:'Complete transaction history across linked accounts'},
+  cards:   {title:'Linked Cards',sub:'Chase Checking · Amex Gold — synced 2 min ago'},
+  settings:{title:'Settings',sub:'Business preferences and integrations'},
+};
+
+function setView(v){
+  document.getElementById('pt').textContent=VC[v].title;
+  document.getElementById('ps').textContent=VC[v].sub;
+  document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.v===v));
+  kc();
+  document.getElementById('content').innerHTML='';
+  ({hub:rHub,routing:rRouting,projects:rProjects,pos:rPOs,invoices:rInvoices,contracts:rContracts,budget:rBudget,cashflow:rCashflow,txns:rTxns,cards:rCards,settings:rSettings}[v]||rHub)(document.getElementById('content'));
+  closeDrawer();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.ni').forEach(el=>el.addEventListener('click',()=>setView(el.dataset.v)));
+
+// ── COMMAND HUB ────────────────────────────────────────
+function rHub(el){
+  const totalBudget=PROJECTS.reduce((a,p)=>a+p.budget,0);
+  const totalSpent=PROJECTS.reduce((a,p)=>a+p.spent,0);
+  const openPOs=POS.filter(p=>p.status==='Open').length;
+  const overdueInv=INVOICES.filter(i=>i.status==='Overdue').reduce((a,i)=>a+i.amount,0);
+  const unrouted=TRANSACTIONS.filter(t=>!t.routed).length;
+  const recentTx=TRANSACTIONS.slice(0,5);
+
+  el.innerHTML=`
+<div class="cards">
+  <div class="card"><div class="cl">Active Projects</div><div class="cv">${PROJECTS.filter(p=>p.status==='Active').length}</div><div class="cd">${$v(totalBudget)} total contracted</div></div>
+  <div class="card"><div class="cl">Total Spent (All Jobs)</div><div class="cv neg">${$v(totalSpent)}</div><div class="cd">${Math.round(totalSpent/totalBudget*100)}% of budget used</div></div>
+  <div class="card"><div class="cl">Overdue Invoices</div><div class="cv neg">${$v(overdueInv)}</div><div class="cd">1 invoice past due</div></div>
+  <div class="card"><div class="cl">Open POs</div><div class="cv pur">${openPOs}</div><div class="cd">Awaiting fulfillment</div></div>
+  <div class="card"><div class="cl">Unrouted Transactions</div><div class="cv" style="color:#B45309">${unrouted}</div><div class="cd">Need assignment</div></div>
+</div>
+
+<div class="hub-grid-2" style="display:grid;grid-template-columns:1.4fr 1fr;gap:1.125rem;margin-bottom:1.125rem">
+  <div class="panel">
+    <div class="ph"><span class="ptitle">Project health</span><span class="bdg bsync">${PROJECTS.length} jobs</span></div>
+    ${PROJECTS.map(p=>{const pct=Math.min(100,Math.round(p.spent/p.budget*100));return`
+    <div class="progress-wrap" style="padding-top:.875rem;cursor:pointer" onclick="setView('projects')">
+      <div class="progress-lbl"><span style="font-weight:500;color:#111827">${p.name}</span><span class="tag tag-${p.status==='Active'?'blue':p.status==='Complete'?'green':p.status==='At Risk'?'red':'gray'}">${p.status}</span></div>
+      <div class="progress-lbl" style="margin-top:2px"><span style="color:#6b7280">${p.client}</span><span style="color:#111827;font-weight:600">${$v(p.spent)} <span style="color:#6b7280;font-weight:400">of ${$v(p.budget)}</span></span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${p.status==='At Risk'?'#E24B4A':p.status==='Complete'?'#6b7280':p.color}"></div></div>
+      <div style="font-size:10px;color:#9ca3af;margin-top:3px;margin-bottom:.875rem">${pct}% of budget · Due ${p.due}</div>
+    </div>`;}).join('')}
+  </div>
+  <div class="panel">
+    <div class="ph"><span class="ptitle">Recent transaction routing</span><button class="btnp" style="font-size:11px;padding:3px 9px" onclick="setView('routing')">View all</button></div>
+    ${recentTx.map(t=>`
+    <div class="rout-row" onclick="setView('routing')" style="cursor:pointer">
+      <div class="rout-ico" style="background:${t.routed?'#d1fae5':'#fef3c7'}">${t.routed?'✓':'⚠'}</div>
+      <div class="rout-info">
+        <div class="rout-name" style="font-size:12px">${t.merchant}</div>
+        <div class="rout-meta">${t.date} · ${t.acc}</div>
+        ${t.routed?`<div style="font-size:10px;color:#5856D6;margin-top:1px">→ ${t.destType}: ${t.dest}</div>`:`<div style="font-size:10px;color:#B45309;margin-top:1px">⚠ Needs assignment</div>`}
+      </div>
+      <div class="rout-amt ${t.amt<0?'neg':'pos'}">${$d(t.amt)}</div>
+    </div>`).join('')}
+  </div>
+</div>
+
+<div class="hub-grid-bottom" style="display:grid;grid-template-columns:1fr 1fr;gap:1.125rem">
+  <div class="panel">
+    <div class="ph"><span class="ptitle">Invoice status</span><button class="btn" style="font-size:11px;padding:3px 9px" onclick="setView('invoices')">Manage</button></div>
+    <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Client</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+    ${INVOICES.slice(0,4).map(i=>`<tr><td style="font-weight:500">${i.id}</td><td>${i.client.split(' ')[0]}</td><td style="font-weight:600">${$v(i.amount)}</td><td><span class="tag tag-${i.status==='Paid'?'green':i.status==='Overdue'?'red':i.status==='Sent'?'blue':'gray'}">${i.status}</span></td></tr>`).join('')}
+    </tbody></table></div>
+  </div>
+  <div class="panel">
+    <div class="ph"><span class="ptitle">Open POs</span><button class="btn" style="font-size:11px;padding:3px 9px" onclick="setView('pos')">Manage</button></div>
+    <div class="table-wrap"><table><thead><tr><th>PO</th><th>Vendor</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+    ${POS.filter(p=>p.status!=='Fulfilled').map(p=>`<tr><td style="font-weight:500">${p.id}</td><td>${p.vendor.split(' ')[0]}</td><td style="font-weight:600">${$v(p.amount)}</td><td><span class="tag tag-${p.status==='Fulfilled'?'green':p.status==='Partially Filled'?'yellow':'blue'}">${p.status}</span></td></tr>`).join('')}
+    </tbody></table></div>
+  </div>
+</div>`;
+}
+
+// ── TRANSACTION ROUTING ────────────────────────────────
+function rRouting(el){
+  const routed=TRANSACTIONS.filter(t=>t.routed);
+  const unrouted=TRANSACTIONS.filter(t=>!t.routed);
+  el.innerHTML=`
+<div class="cards">
+  <div class="card"><div class="cl">Auto-routed today</div><div class="cv pos">${routed.length}</div><div class="cd">Matched automatically</div></div>
+  <div class="card"><div class="cl">Needs review</div><div class="cv" style="color:#B45309">${unrouted.length}</div><div class="cd">Manual assignment needed</div></div>
+  <div class="card"><div class="cl">Routing accuracy</div><div class="cv pos">96.4%</div><div class="cd">Last 30 days</div></div>
+  <div class="card"><div class="cl">Total routed $</div><div class="cv pur">${$v(Math.abs(routed.filter(t=>t.amt<0).reduce((a,t)=>a+t.amt,0)))}</div><div class="cd">Spend allocated</div></div>
+</div>
+
+<div class="panel" style="margin-bottom:1.125rem">
+  <div class="ph">
+    <span class="ptitle">⚠ Needs assignment (${unrouted.length} transactions)</span>
+    <span class="bdg bwarn">Action required</span>
+  </div>
+  ${unrouted.map(t=>`
+  <div class="rout-row unmatched-row">
+    <div class="rout-ico" style="background:#fef3c7;font-size:13px">⚠</div>
+    <div class="rout-info">
+      <div class="rout-name">${t.merchant}</div>
+      <div class="rout-meta">${t.date} · ${t.acc} · ${t.cat}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="rout-amt neg">${$d(t.amt)}</div>
+      <select class="assign-sel" onchange="assignTx('${t.id}',this.value)" style="font-size:11px;max-width:160px">
+        <option value="">Assign to...</option>
+        <optgroup label="Projects">${PROJECTS.map(p=>`<option value="proj:${p.id}">${p.id} – ${p.name.substring(0,22)}...</option>`).join('')}</optgroup>
+        <optgroup label="Purchase Orders">${POS.filter(p=>p.status!=='Fulfilled').map(p=>`<option value="po:${p.id}">${p.id} – ${p.vendor}</option>`).join('')}</optgroup>
+        <optgroup label="Invoices">${INVOICES.map(i=>`<option value="inv:${i.id}">${i.id} – ${i.client.split(' ')[0]}</option>`).join('')}</optgroup>
+        <optgroup label="Contracts">${CONTRACTS.map(c=>`<option value="ctr:${c.id}">${c.id} – ${c.name.substring(0,20)}...</option>`).join('')}</optgroup>
+        <optgroup label="General"><option value="gen:overhead">Overhead / General</option><option value="gen:meals">Meals &amp; Entertainment</option><option value="gen:travel">Travel</option></optgroup>
+      </select>
+    </div>
+  </div>`).join('')}
+</div>
+
+<div class="panel">
+  <div class="ph"><span class="ptitle">Auto-routed transactions</span><div style="font-size:11px;color:#6b7280">Confidence score shown</div></div>
+  ${routed.map(t=>`
+  <div class="rout-row">
+    <div class="rout-ico" style="background:#d1fae5;font-size:14px">✓</div>
+    <div class="rout-info">
+      <div class="rout-name">${t.merchant}</div>
+      <div class="rout-meta">${t.date} · ${t.acc} · ${t.cat}</div>
+      <div class="conf-bar">
+        <div class="conf-track"><div class="conf-fill" style="width:${t.conf}%;background:${t.conf>90?'#1D9E75':t.conf>75?'#5856D6':'#B45309'}"></div></div>
+        <span style="font-size:10px;color:#6b7280">${t.conf}% confidence</span>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div class="rout-amt ${t.amt<0?'neg':'pos'}">${$d(t.amt)}</div>
+      <div style="margin-top:3px"><span class="tag tag-${t.destType==='PO'?'blue':t.destType==='Project'?'purple':t.destType==='Invoice'?'green':'yellow'}">${t.destType}: ${t.dest}</span></div>
+    </div>
+  </div>`).join('')}
+</div>`;
+}
+window.assignTx=function(id,val){
+  if(!val)return;
+  const tx=TRANSACTIONS.find(t=>t.id===id);
+  if(!tx)return;
+  const parts=val.split(':');
+  tx.routed=true;tx.dest=parts[1];tx.destType={proj:'Project',po:'PO',inv:'Invoice',ctr:'Contract',gen:'General'}[parts[0]];tx.conf=100;
+  rRouting(document.getElementById('content'));
+};
+
+// ── PROJECTS ───────────────────────────────────────────
+function rProjects(el){
+  el.innerHTML=`
+<div class="cards">
+  <div class="card"><div class="cl">Total contracted</div><div class="cv">${$v(PROJECTS.reduce((a,p)=>a+p.budget,0))}</div></div>
+  <div class="card"><div class="cl">Total spent</div><div class="cv neg">${$v(PROJECTS.reduce((a,p)=>a+p.spent,0))}</div></div>
+  <div class="card"><div class="cl">Remaining budget</div><div class="cv pos">${$v(PROJECTS.reduce((a,p)=>a+(p.budget-p.spent),0))}</div></div>
+  <div class="card"><div class="cl">Active jobs</div><div class="cv pur">${PROJECTS.filter(p=>p.status==='Active').length}</div></div>
+</div>
+<div class="panel">
+  <div class="ph"><span class="ptitle">All projects</span><button class="btnp" style="font-size:11px;padding:4px 10px" onclick="showNewProjectModal()">+ New project</button></div>
+  <div class="table-wrap"><table><thead><tr><th>Project ID</th><th>Name</th><th>Client</th><th>Budget</th><th>Spent</th><th>Remaining</th><th>PM</th><th>Due</th><th>Status</th></tr></thead><tbody>
+  ${PROJECTS.map(p=>{const rem=p.budget-p.spent;return`
+  <tr>
+    <td style="font-weight:600;color:#5856D6">${p.id}</td>
+    <td style="font-weight:500">${p.name}</td>
+    <td>${p.client}</td>
+    <td style="font-weight:600">${$v(p.budget)}</td>
+    <td class="neg" style="font-weight:500">${$v(p.spent)}</td>
+    <td class="${rem>0?'pos':'neg'}" style="font-weight:500">${$v(rem)}</td>
+    <td>${p.pm}</td>
+    <td>${p.due}</td>
+    <td><span class="tag tag-${p.status==='Active'?'blue':p.status==='Complete'?'green':p.status==='At Risk'?'red':'gray'}">${p.status}</span></td>
+  </tr>`}).join('')}
+  </tbody></table></div>
+</div>
+${PROJECTS.map(p=>{
+  const txns=TRANSACTIONS.filter(t=>t.dest===p.id&&t.routed);
+  const pct=Math.min(100,Math.round(p.spent/p.budget*100));
+  return`<div class="panel">
+    <div class="ph"><span class="ptitle" style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:50%;background:${p.color};display:inline-block"></span>${p.name}</span><span class="tag tag-${p.status==='Active'?'blue':p.status==='Complete'?'green':p.status==='At Risk'?'red':'gray'}">${p.status}</span></div>
+    <div class="kv-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="kv"><span class="kv-l">Client</span><span class="kv-v">${p.client}</span></div>
+      <div class="kv"><span class="kv-l">Budget</span><span class="kv-v">${$v(p.budget)}</span></div>
+      <div class="kv"><span class="kv-l">Spent</span><span class="kv-v neg">${$v(p.spent)}</span></div>
+      <div class="kv"><span class="kv-l">Remaining</span><span class="kv-v ${p.budget-p.spent>0?'pos':'neg'}">${$v(p.budget-p.spent)}</span></div>
+    </div>
+    <div style="padding:.75rem 1.25rem .5rem">
+      <div class="progress-lbl"><span>Budget utilization</span><span>${pct}%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${pct>90?'#E24B4A':'#5856D6'}"></div></div>
+    </div>
+    ${txns.length?`<div style="padding:.5rem 1.25rem .25rem;font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.06em">Routed transactions</div>
+    ${txns.map(t=>`<div class="rout-row"><div class="rout-info"><div class="rout-name" style="font-size:12px">${t.merchant}</div><div class="rout-meta">${t.date} · ${t.acc}</div></div><div class="rout-amt neg">${$d(t.amt)}</div></div>`).join('')}`:''}
+  </div>`;}).join('')}`;
+}
+window.showNewProjectModal=function(){
+  const mb=document.createElement('div');mb.className='modal-bg';mb.innerHTML=`<div class="modal"><h3>New Project</h3>
+    <div class="modal-row"><label>Project Name</label><input type="text" placeholder="e.g. Office Renovation Phase 3"></div>
+    <div class="modal-row"><label>Client</label><input type="text" placeholder="Client name"></div>
+    <div class="modal-row"><label>Budget</label><input type="number" placeholder="0.00"></div>
+    <div class="modal-row"><label>Due Date</label><input type="date"></div>
+    <div class="modal-btns"><button class="btn" onclick="this.closest('.modal-bg').remove()">Cancel</button><button class="btnp" onclick="saveProject(this)">Create Project</button></div>
+  </div>`;document.body.appendChild(mb);
+};
+window.saveProject=function(btn){
+  const modal=btn.closest('.modal');
+  const inputs=modal.querySelectorAll('input');
+  PROJECTS.push({id:'P00'+(PROJECTS.length+1),name:inputs[0].value||'New Project',client:inputs[1].value||'Unknown',budget:parseFloat(inputs[2].value)||0,spent:0,status:'Active',pm:'You',due:inputs[3].value||'TBD',color:'#5856D6'});
+  btn.closest('.modal-bg').remove();
+  rProjects(document.getElementById('content'));
+};
+
+// ── PURCHASE ORDERS ────────────────────────────────────
+function rPOs(el){
+  el.innerHTML=`
+<div class="cards">
+  <div class="card"><div class="cl">Open POs</div><div class="cv pur">${POS.filter(p=>p.status==='Open').length}</div></div>
+  <div class="card"><div class="cl">Total committed</div><div class="cv">${$v(POS.filter(p=>p.status!=='Fulfilled').reduce((a,p)=>a+p.amount,0))}</div></div>
+  <div class="card"><div class="cl">Fulfilled this month</div><div class="cv pos">${POS.filter(p=>p.status==='Fulfilled').length}</div></div>
+  <div class="card"><div class="cl">Partially filled</div><div class="cv" style="color:#B45309">${POS.filter(p=>p.status==='Partially Filled').length}</div></div>
+</div>
+<div class="panel">
+  <div class="ph"><span class="ptitle">Purchase orders</span><button class="btnp" style="font-size:11px;padding:4px 10px" onclick="showNewPOModal()">+ New PO</button></div>
+  <div class="table-wrap"><table><thead><tr><th>PO Number</th><th>Vendor</th><th>Project</th><th>Category</th><th>Amount</th><th>Date</th><th>Matched</th><th>Status</th></tr></thead><tbody>
+  ${POS.map(p=>`<tr>
+    <td style="font-weight:600;color:#5856D6">${p.id}</td>
+    <td style="font-weight:500">${p.vendor}</td>
+    <td><span class="tag tag-purple">${p.project}</span></td>
+    <td>${p.category}</td>
+    <td style="font-weight:600">${$v(p.amount)}</td>
+    <td>${p.date}</td>
+    <td>${p.matched?'<span class="tag tag-green">✓ Matched</span>':'<span class="tag tag-yellow">⚠ Pending</span>'}</td>
+    <td><span class="tag tag-${p.status==='Fulfilled'?'green':p.status==='Partially Filled'?'yellow':'blue'}">${p.status}</span></td>
+  </tr>`).join('')}
+  </tbody></table></div>
+</div>`;
+}
+window.showNewPOModal=function(){
+  const mb=document.createElement('div');mb.className='modal-bg';mb.innerHTML=`<div class="modal"><h3>New Purchase Order</h3>
+    <div class="modal-row"><label>Vendor</label><input type="text" placeholder="Vendor name"></div>
+    <div class="modal-row"><label>Project</label><select>${PROJECTS.map(p=>`<option value="${p.id}">${p.id} – ${p.name}</option>`).join('')}</select></div>
+    <div class="modal-row"><label>Category</label><select><option>Materials</option><option>Equipment</option><option>Labor</option><option>Supplies</option><option>Electrical</option><option>Other</option></select></div>
+    <div class="modal-row"><label>Amount</label><input type="number" placeholder="0.00"></div>
+    <div class="modal-btns"><button class="btn" onclick="this.closest('.modal-bg').remove()">Cancel</button><button class="btnp" onclick="savePO(this)">Create PO</button></div>
+  </div>`;document.body.appendChild(mb);
+};
+window.savePO=function(btn){
+  const modal=btn.closest('.modal');
+  const inputs=modal.querySelectorAll('input');
+  const selects=modal.querySelectorAll('select');
+  POS.unshift({id:'PO-2026-0'+(POS.length+42),vendor:inputs[0].value||'New Vendor',project:selects[0].value,amount:parseFloat(inputs[1].value)||0,status:'Open',date:'May 03 2026',category:selects[1].value,matched:false});
+  btn.closest('.modal-bg').remove();rPOs(document.getElementById('content'));
+};
+
+// ── INVOICES ───────────────────────────────────────────
+function rInvoices(el){
+  const totalOut=INVOICES.filter(i=>i.status!=='Paid').reduce((a,i)=>a+i.amount,0);
+  const paid=INVOICES.filter(i=>i.status==='Paid').reduce((a,i)=>a+i.amount,0);
+  el.innerHTML=`
+<div class="cards">
+  <div class="card"><div class="cl">Outstanding</div><div class="cv neg">${$v(totalOut)}</div></div>
+  <div class="card"><div class="cl">Paid this month</div><div class="cv pos">${$v(paid)}</div></div>
+  <div class="card"><div class="cl">Overdue</div><div class="cv neg">${INVOICES.filter(i=>i.status==='Overdue').length}</div></div>
+  <div class="card"><div class="cl">Draft</div><div class="cv" style="color:#6b7280">${INVOICES.filter(i=>i.status==='Draft').length}</div></div>
+</div>
+<div class="panel">
+  <div class="ph"><span class="ptitle">All invoices</span><button class="btnp" style="font-size:11px;padding:4px 10px">+ New invoice</button></div>
+  <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Client</th><th>Project</th><th>Amount</th><th>Issued</th><th>Due</th><th>Status</th><th>Action</th></tr></thead><tbody>
+  ${INVOICES.map(i=>`<tr>
+    <td style="font-weight:600;color:#5856D6">${i.id}</td>
+    <td style="font-weight:500">${i.client}</td>
+    <td><span class="tag tag-purple">${i.project}</span></td>
+    <td style="font-weight:600">${$v(i.amount)}</td>
+    <td>${i.issued}</td>
+    <td style="${i.status==='Overdue'?'color:#E24B4A;font-weight:600':''}">${i.due}</td>
+    <td><span class="tag tag-${i.status==='Paid'?'green':i.status==='Overdue'?'red':i.status==='Sent'?'blue':'gray'}">${i.status}</span></td>
+    <td><button class="btn" style="font-size:10px;padding:2px 8px">${i.status==='Draft'?'Send':'View'}</button></td>
+  </tr>`).join('')}
+  </tbody></table></div>
+</div>`;
+}
+
+// ── CONTRACTS ─────────────────────────────────────────
+function rContracts(el){
+  el.innerHTML=`
+<div class="cards">
+  <div class="card"><div class="cl">Active contracts</div><div class="cv pur">${CONTRACTS.filter(c=>c.status==='Active').length}</div></div>
+  <div class="card"><div class="cl">Total value</div><div class="cv">${$v(CONTRACTS.reduce((a,c)=>a+c.value,0))}</div></div>
+  <div class="card"><div class="cl">Active value</div><div class="cv pos">${$v(CONTRACTS.filter(c=>c.status==='Active').reduce((a,c)=>a+c.value,0))}</div></div>
+  <div class="card"><div class="cl">Closed</div><div class="cv" style="color:#6b7280">${CONTRACTS.filter(c=>c.status==='Closed').length}</div></div>
+</div>
+<div class="panel">
+  <div class="ph"><span class="ptitle">All contracts</span><button class="btnp" style="font-size:11px;padding:4px 10px">+ New contract</button></div>
+  <div class="table-wrap"><table><thead><tr><th>Contract ID</th><th>Name</th><th>Client</th><th>Value</th><th>Start</th><th>End</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+  ${CONTRACTS.map(c=>`<tr>
+    <td style="font-weight:600;color:#5856D6">${c.id}</td>
+    <td style="font-weight:500">${c.name}</td>
+    <td>${c.client}</td>
+    <td style="font-weight:600">${$v(c.value)}</td>
+    <td>${c.start}</td>
+    <td>${c.end}</td>
+    <td><span class="tag tag-${c.status==='Active'?'green':'gray'}">${c.status}</span></td>
+    <td style="display:flex;gap:6px"><button class="btn" style="font-size:10px;padding:2px 8px">View</button><button class="btn" style="font-size:10px;padding:2px 8px">POs</button></td>
+  </tr>`).join('')}
+  </tbody></table></div>
+</div>`;
+}
+
+// ── BUDGET ────────────────────────────────────────────
+function rBudget(el){
+  const inc=[[5500,5500,5500,5500,5500,5500,5500,5500,5500,5500,5500,5500],[800,1200,650,900,750,750,750,750,750,750,750,750]];
+  const exp=[[1400,1400,1400,1400,1400,1400,1400,1400,1400,1400,1400,1400],[620,590,645,608,600,600,600,600,600,600,600,600],[310,275,420,290,300,300,300,300,300,300,300,300]];
+  const ti=MO.map((_,i)=>inc.reduce((s,r)=>s+r[i],0));
+  const te=MO.map((_,i)=>exp.reduce((s,r)=>s+r[i],0));
+  const net=MO.map((_,i)=>ti[i]-te[i]);
+  el.innerHTML=`<div class="panel"><div class="ph"><span class="ptitle">Monthly budget overview</span></div><div class="cw"><canvas id="bc"></canvas></div></div>`;
+  const c=new Chart(document.getElementById('bc').getContext('2d'),{type:'bar',data:{labels:MO,datasets:[
+    {label:'Income',data:ti,backgroundColor:'rgba(29,158,117,.7)',borderRadius:3},
+    {label:'Expenses',data:te,backgroundColor:'rgba(226,75,74,.6)',borderRadius:3},
+    {label:'Net',data:net,type:'line',borderColor:'#5856D6',backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointBackgroundColor:'#5856D6',tension:.3,yAxisID:'y2'},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>'$'+(v/1000).toFixed(0)+'k'}},y2:{position:'right',ticks:{font:{size:11},callback:v=>'$'+(v/1000).toFixed(0)+'k'}}}}});
+  charts.push(c);
+}
+
+// ── CASH FLOW ─────────────────────────────────────────
+function rCashflow(el){
+  const inc=[8300,8300,8400,8300,8400,8400,8400,8400,8400,8400,8400,8400];
+  const exp=[5345,5267,5793,5405,5430,5430,5430,5430,5430,5430,5430,5430];
+  el.innerHTML=`<div class="panel"><div class="ph"><span class="ptitle">Cash flow — income vs expenses</span></div><div class="cw"><canvas id="cf"></canvas></div></div>`;
+  const c=new Chart(document.getElementById('cf').getContext('2d'),{type:'bar',data:{labels:MO,datasets:[
+    {label:'Income',data:inc,backgroundColor:'rgba(29,158,117,.7)',borderRadius:3},
+    {label:'Expenses',data:exp,backgroundColor:'rgba(226,75,74,.6)',borderRadius:3},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{ticks:{font:{size:11},callback:v=>'$'+(v/1000).toFixed(0)+'k'}}}}});
+  charts.push(c);
+}
+
+// ── ALL TRANSACTIONS ──────────────────────────────────
+function rTxns(el){
+  el.innerHTML=`<div class="panel"><div class="ph"><span class="ptitle">All transactions</span></div>
+  <div class="table-wrap"><table><thead><tr><th>Date</th><th>Merchant</th><th>Account</th><th>Category</th><th>Amount</th><th>Routed to</th><th>Confidence</th></tr></thead><tbody>
+  ${TRANSACTIONS.map(t=>`<tr class="${!t.routed?'unmatched-row':''}">
+    <td>${t.date}</td>
+    <td style="font-weight:500">${t.merchant}</td>
+    <td>${t.acc}</td>
+    <td>${t.cat}</td>
+    <td style="font-weight:600" class="${t.amt<0?'neg':'pos'}">${$d(t.amt)}</td>
+    <td>${t.routed?`<span class="tag tag-${t.destType==='PO'?'blue':t.destType==='Project'?'purple':t.destType==='Invoice'?'green':'yellow'}">${t.destType}: ${t.dest}</span>`:'<span class="tag tag-yellow">⚠ Unassigned</span>'}</td>
+    <td>${t.routed?`<span style="color:${t.conf>90?'#1D9E75':t.conf>75?'#5856D6':'#B45309'};font-weight:600">${t.conf}%</span>`:'—'}</td>
+  </tr>`).join('')}
+  </tbody></table></div></div>`;
+}
+
+// ── LINKED CARDS ──────────────────────────────────────
+function rCards(el){
+  el.innerHTML=`
+  <div class="panel" style="padding:1.25rem;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <div><div style="font-weight:600;font-size:14px;color:#111827">Chase Total Checking ···· 4521</div><div style="font-size:11px;color:#6b7280;margin-top:2px">Last synced 2 minutes ago</div></div>
+      <span class="bdg bok">● Connected</span>
+    </div>
+    <div style="font-size:28px;font-weight:700;color:#111827;margin-bottom:.5rem">$3,842.56</div>
+    <div style="font-size:11px;color:#6b7280">Available balance</div>
+    <div style="display:flex;gap:8px;margin-top:1.25rem"><button class="btn">View transactions</button><button class="btn">Unlink</button></div>
+  </div>
+  <div class="panel" style="padding:1.25rem;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <div><div style="font-weight:600;font-size:14px;color:#111827">Amex Gold Card ···· 3891</div><div style="font-size:11px;color:#6b7280;margin-top:2px">Last synced 2 minutes ago</div></div>
+      <span class="bdg bok">● Connected</span>
+    </div>
+    <div style="font-size:28px;font-weight:700;color:#E24B4A;margin-bottom:.5rem">$1,240.80</div>
+    <div style="font-size:11px;color:#6b7280">Balance owed · $5,000 limit</div>
+    <div style="height:5px;background:#f3f4f6;border-radius:3px;margin-top:.875rem"><div style="height:5px;width:24.8%;background:#B45309;border-radius:3px"></div></div>
+    <div style="font-size:10px;color:#6b7280;margin-top:4px">24.8% utilization</div>
+    <div style="display:flex;gap:8px;margin-top:1.25rem"><button class="btn">View transactions</button><button class="btn">Unlink</button></div>
+  </div>
+  <div style="border:2px dashed #e5e7eb;border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer" onclick="alert('Plaid integration opens here in production')">
+    <div style="font-size:22px;color:#9ca3af;margin-bottom:.5rem">+</div>
+    <div style="font-size:13px;font-weight:600;color:#374151">Link another account</div>
+    <div style="font-size:12px;color:#9ca3af;margin-top:4px">Connect via Plaid — bank-level security</div>
+  </div>`;
+}
+
+// ── SETTINGS ──────────────────────────────────────────
+function rSettings(el){
+  const settings=[
+    {l:'Auto-route transactions',s:'Automatically match card spend to Projects, POs, and Invoices',on:true},
+    {l:'Routing confidence threshold',s:'Only auto-route when confidence is above 85%',on:true},
+    {l:'Low balance alerts',s:'Alert when account falls below $1,000',on:true},
+    {l:'Invoice overdue alerts',s:'Notify when invoices pass their due date',on:true},
+    {l:'PO fulfillment alerts',s:'Alert when a PO is matched to a transaction',on:false},
+    {l:'Weekly financial summary',s:'Email report every Monday',on:true},
+    {l:'Two-factor authentication',s:'Required for all team members',on:false},
+  ];
+  el.innerHTML=`<div class="panel"><div class="ph"><span class="ptitle">Preferences</span></div>
+  ${settings.map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem;border-bottom:1px solid #f3f4f6;gap:1rem">
+    <div><div style="font-size:13px;font-weight:500;color:#111827">${s.l}</div><div style="font-size:11px;color:#6b7280;margin-top:2px">${s.s}</div></div>
+    <label style="position:relative;display:inline-block;width:36px;height:20px;cursor:pointer;flex-shrink:0">
+      <input type="checkbox" ${s.on?'checked':''} style="opacity:0;width:0;height:0">
+      <span style="position:absolute;inset:0;background:${s.on?'#5856D6':'#d1d5db'};border-radius:20px;transition:.2s"></span>
+      <span style="position:absolute;width:14px;height:14px;background:white;border-radius:50%;top:3px;left:${s.on?'19':'3'}px;transition:.2s"></span>
+    </label>
+  </div>`).join('')}
+  </div>`;
+}
+
+// INIT
+rHub(document.getElementById('content'));
+</script>
+
+</body>
+</html>
